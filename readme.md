@@ -6,6 +6,7 @@ This project implements a Model Context Protocol (MCP) server that provides seve
 
 *   **`add` tool:** Adds two numbers together.
 *   **`get-time` tool:** Returns the current server time.
+*   **`update-config-index` tool:** update the index in configfile by increment.
 *   **`random-joke` resource:** Provides a random joke.
 *   **`friendly-greeting` prompt:** Generates a friendly greeting message given a name.
 
@@ -119,4 +120,11 @@ The Gemini CLI will communicate with this MCP server to execute the requested fu
    #prompt
    > friendly-greeting to wangxg 
    ✦ Hello, wangxg! It's a pleasure to meet you. I hope you're having a fantastic day
+   ```
+5. invoke the 'update-config-index' tool
+   ```bash
+   #prompt:
+   > update the index in configfile @config/config.yaml by increment 10
+   ✓  update-config-index (my-mcp) {"numberOfIncrements":10,"filePath":"C:\\work\\mcp-server\\mcp-server-hello\\config\\config.yaml"}
+   OK. I've updated the index in `config/config.yaml` to 12.
    ```
