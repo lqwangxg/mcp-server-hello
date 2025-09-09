@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { registerConfigUpdaterTool } from "./src/tools/config-updater.js";
 
 // Initialize the MCP server with a name and version.
 const mcpServer = new McpServer({
@@ -98,6 +99,8 @@ mcpServer.registerPrompt(
     };
   }
 );
+// 非同期関数としてツールを登録
+await registerConfigUpdaterTool(mcpServer);
 
 // Main function to connect the MCP server to the transport.
 async function main() {
