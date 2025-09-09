@@ -1,0 +1,37 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+.report/
+.gemini
+.gemini-local
+.gemini/.env
+.gemini/settings.json
+
+# Node.js
+# attention: .gitignore should not ignore .node_modules by default
+# because it is a common practice to commit node_modules to git.
+# If you want to ignore node_modules, please add it to .gitignore manually.
+node_modules
+dist
+dist-dev
+.env
+.DS_Store
+*.tsbuildinfo
+package-lock.json
+.vscode
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvsps
+*.njsproj
+*.sln
+*.bak
+
