@@ -1,61 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { registerServerTimeTool } from "./src/tools/server-time.js";
+import { registerMathAddTool } from "./src/tools/math-add.js";
 import { registerConfigUpdaterTool } from "./src/tools/config-updater.js";
 
-// Initialize the MCP server with a name and version.
-const mcpServer = new McpServer({
-  name: "tools-with-sample-server",
+// サーバーの共通設定
+const SERVER_INFO = {
+  name: "multi-mode-mcp-server",
   version: "1.0.0",
-});
-
-// Register a tool for adding two numbers.
-mcpServer.registerTool(
-  "add",
-  {
-    description: "Add two numbers together",
-    inputSchema: {
-      a: z.number().describe("The first number to add."),
-      b: z.number().describe("The second number to add."),
-    },
-  },
-  async ({ a, b }) => {
-    const result = a + b;
-    return {
-      content: [
-        {
-          type: "text",
-          text: `The sum of ${a} and ${b} is ${result}.`,
-        },
-      ],
-    };
-  }
-);
-
-// Register a tool for getting the current server time.
-mcpServer.registerTool(
-  "get-time",
-  {
-    description: "Get the current server time",
-    inputSchema: {},
-  },
-  async () => {
-    const now = new Date();
-    return {
-      content: [
-        {
-          type: "text",
-          text: `The current server time is ${now.toLocaleTimeString()}.`,
-        },
-      ],
-    };
-  }
-);
+  description: "An MCP server supporting multiple transport modes.",
+};
+// Initialize the MCP server with a name and version.
+const mcpServer = new McpServer(SERVER_INFO);
 
 // Register a resource for getting a random joke.
 mcpServer.registerResource(
-  "random-joke",
-  "random-joke://{joke}",
+  "joke",
+  "joke://{joke}",
   {
     description: "Get a random joke",
     inputSchema: {},
@@ -65,6 +27,11 @@ mcpServer.registerResource(
       "Why don't scientists trust atoms? Because they make up everything!",
       "Why did the scarecrow win an award? Because he was outstanding in his field!",
       "Why don't programmers like nature? It has too many bugs.",
+      "为什么花儿是红的？因为它们看到了玫瑰。",
+      "为什么数学书总是很难过？因为它有太多的问题。",
+      "程序员为什么喜欢下雨天？因为可以在家里调试代码。",
+      "科学家为什么不相信原子？因为它们编造了一切！",
+      "稻草人为什么得奖了？因为他在田野里表现出色！",
     ];
     const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
     return {
@@ -93,19 +60,40 @@ mcpServer.registerPrompt(
       content: [
         {
           type: "text",
-          text: `Hello, ${name}! Hope you're having a fantastic day!`,
+          text: `Hello, ${name} 您好! Hope you're having a fantastic day!`,
         },
       ],
     };
   }
 );
-// 非同期関数としてツールを登録
-await registerConfigUpdaterTool(mcpServer);
+
+// カスタムHTTPトランスポートクラス
 
 // Main function to connect the MCP server to the transport.
 async function main() {
-  const transport = new StdioServerTransport();
-  await mcpServer.connect(transport);
+
+  // 非同期関数としてツールを登録
+  await registerMathAddTool(mcpServer);
+  await registerConfigUpdaterTool(mcpServer);
+  await registerServerTimeTool(mcpServer);
+
+  const args = process.argv.slice(2);
+  const mode = args.find(arg => arg.startsWith('--mode='))?.split('=')[1] || 'stdio';
+  const port = parseInt(args.find(arg => arg.startsWith('--port='))?.split('=')[1] || '8080', 10);
+
+  let transport;
+
+  switch (mode) {
+    case 'http':
+      // startHttpServer(mcpServer, port);
+      console.error(`Starting MCP server in HTTP mode on port ${port}...`);
+      break;
+    default:
+      transport = new StdioServerTransport();
+      console.error("Starting MCP server in STDIO mode...");
+      await mcpServer.connect(transport);
+      break;
+  }
   // remove console.log to avoid output to stdout
   //console.log("MCP server is running..."); 
 }

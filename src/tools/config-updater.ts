@@ -4,7 +4,6 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import fs from 'fs/promises';
 import YAML from 'yaml';
-import { number } from "zod/v4";
 
 /**
  * config.yamlを更新するツールをMCPサーバーに登録する関数。
